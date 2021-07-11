@@ -80,7 +80,7 @@ def notify(curr = 0.00):
     #   message = client.messages.create(
     #                 body=messageInfo,
     #                 from_='+16468462970',
-    #                 to='+8619512351517'
+    #                 to='+8610000000000'
     #               )
     #   print(message.sid)
     # except TwilioRestException as e:
