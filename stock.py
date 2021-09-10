@@ -8,21 +8,15 @@ from decimal import Decimal
 import threading
 import time
 
-#https://www.twilio.com/console zhangsan zhang.12345678
-# from twilio.rest import Client
-# from twilio.base.exceptions import TwilioRestException
-# account_sid = "AC684f709ca3e4e73eaa075d4471fda01f"
-# auth_token = "0ae0ddac171b2ecf2363e21a14d1de05"
-
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
 # 第三方 SMTP 服务
 mail_host="smtp.163.com"  #设置服务器
-mail_user="henu1314@163.com"    #用户名
-mail_pass="xxxxxdnnnn"   #口令
+mail_user="xxxx"    #用户名
+mail_pass="xx"   #口令
 sender=mail_user # 发送邮件
-receivers=['978683363@qq.com'] # 接收邮件
+receivers=['xx@qq.com'] # 接收邮件
 
 buy = 0.00
 up = 0.79
@@ -33,19 +27,20 @@ def notify(curr = 0.00):
   global buy
   buy = float(Decimal(buy).quantize(Decimal('0.00')))
   curr = float(Decimal(curr).quantize(Decimal('0.00')))
+  space = float(Decimal(curr - buy).quantize(Decimal('0.00')))
 
   print('')
   curr_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-  print('----实时USoil: ' + str(curr) + '-----', curr_time)
+  print('\033[7;30;46m----实时USoil: ' + str(curr) + '-----' + 'b:' + str(buy) + '--' + 'space:' + str(space) + '-----', curr_time, '\033[0m')
 
   messageInfo = ''
   if curr >= buy + up:
     timer.cancel()
-    print('***' + str(buy) + '-' + str(curr),'*****止盈*****')
+    print('\033[1;5;31m**买**' + str(buy) + '-' + str(curr),'*****止盈*****\033[0m')
     messageInfo= '通知：' + curr_time + ' US oil ' + str(buy) + '-' + str(curr) + ' 已止盈'
   if curr <= buy - down:
     timer.cancel()
-    print('***' + str(buy) + '-' + str(curr),'*****止损*****')
+    print('\033[1;5;31m**卖**' + str(buy) + '-' + str(curr),'*****止盈*****\033[0m')
     messageInfo= '通知：' + curr_time + ' US oil ' + str(buy) + '-' + str(curr) + ' 已止损'
 
   if messageInfo:
@@ -61,7 +56,7 @@ def notify(curr = 0.00):
     
     # 三个参数：第一个为文本内容，第二个 plain 设置文本格式，第三个 utf-8 设置编码
     message = MIMEText(content, 'html', 'utf-8')
-    message['From'] = Header('智能机器人小O')   # 发送者
+    message['From'] = Header(mail_user)   # 发送者
     message['To'] =  Header(receivers[0])    # 接收者
     message['Subject'] = Header(title, 'utf-8')
     
@@ -74,17 +69,6 @@ def notify(curr = 0.00):
       print("邮件发送成功")
     except smtplib.SMTPException as e:
       print("Error: 无法发送邮件", e)
-
-    # try:
-    #   client = Client(account_sid, auth_token)
-    #   message = client.messages.create(
-    #                 body=messageInfo,
-    #                 from_='+16468462970',
-    #                 to='+8610000000000'
-    #               )
-    #   print(message.sid)
-    # except TwilioRestException as e:
-    #     print(e)
   pass
 
 def pickPrice(str = ''):
@@ -118,13 +102,6 @@ def getUSoilPrice():
     if res.status_code == 200:
       res.encoding = 'gbk'
       result_str = res.text
-      # print('')
-      # print('')
-      # print('---------------------------------------------')
-      # print(result_str)
-      # print('----------------------------------------------')
-      # print('')
-      # print('')
       pickPrice(result_str)
     else:
       print('爬取数据失败')
