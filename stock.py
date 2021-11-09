@@ -13,11 +13,12 @@ from email.mime.text import MIMEText
 from email.header import Header
 # 第三方 SMTP 服务
 mail_host="smtp.163.com"  #设置服务器
-mail_user="xxxx"    #用户名
-mail_pass="xx"   #口令
+mail_user=""    #用户名
+mail_pass=""   #口令
 sender=mail_user # 发送邮件
-receivers=['xx@qq.com'] # 接收邮件
+receivers=[''] # 接收邮件
 
+dir = 'b' # b: buy s: sell
 buy = 0.00
 up = 0.79
 down = 0.59
@@ -34,11 +35,11 @@ def notify(curr = 0.00):
   print('\033[7;30;46m----实时USoil: ' + str(curr) + '-----' + 'b:' + str(buy) + '--' + 'space:' + str(space) + '-----', curr_time, '\033[0m')
 
   messageInfo = ''
-  if curr >= buy + up:
+  if (dir == 'b' and curr >= buy + up) or (dir == 's' and curr <= buy - up):
     timer.cancel()
     print('\033[1;5;31m**买**' + str(buy) + '-' + str(curr),'*****止盈*****\033[0m')
     messageInfo= '通知：' + curr_time + ' US oil ' + str(buy) + '-' + str(curr) + ' 已止盈'
-  if curr <= buy - down:
+  if (dir == 'b' and curr <= buy - down) or (dir == 's' and curr >= buy + down):
     timer.cancel()
     print('\033[1;5;31m**卖**' + str(buy) + '-' + str(curr),'*****止盈*****\033[0m')
     messageInfo= '通知：' + curr_time + ' US oil ' + str(buy) + '-' + str(curr) + ' 已止损'
@@ -116,5 +117,7 @@ def startTask():
 if __name__ == "__main__":
   #买入价格
   buy = sys.argv[1]
+  #方向: b买 s卖
+  dir = sys.argv[2]
   startTask()
 
